@@ -4,7 +4,7 @@ pragma solidity ^0.8.33;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {Fluxion} from "../src/Fluxion.sol";
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 /// Deploy script for Foundry (forge)
 contract DeployFluxion is Script {
@@ -14,29 +14,29 @@ contract DeployFluxion is Script {
 
         vm.startBroadcast(deployerKey);
 
-        // 1) Deploy implementation (logic contract)
-        Fluxion impl = new Fluxion();
-
-        // 2) Prepare initialize calldata (calls [`initialize(string,string,address)`](src/Fluxion.sol:27) on implementation via delegatecall)
+        // Prepare initialize calldata (include trustedForwarder param)
         bytes memory initData = abi.encodeWithSignature(
-            "initialize(string,string,address)",
+            "initialize(string,string,address,address)",
             "Fluxion",
             "FLX",
-            deployer
+            deployer,
+            address(0)
         );
 
-        // 3) Deploy ERC1967Proxy and initialize in the same tx
-        ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
+        // Deploy UUPS proxy and implementation using OpenZeppelin Foundry Upgrades helper.
+        // The helper will deploy the implementation and create an ERC1967 proxy pointing to it,
+        // calling `initialize` (delegatecall) on creation with `initData`.
+        address proxyAddr = Upgrades.deployUUPSProxy("src/Fluxion.sol:Fluxion", initData);
 
-        // 4) Interact with the proxy as the Fluxion token
-        Fluxion token = Fluxion(address(proxy));
+        // Interact with the proxy as the Fluxion token
+        Fluxion token = Fluxion(proxyAddr);
 
         vm.stopBroadcast();
 
         // Print addresses
         console.log("Deployer:", deployer);
-        console.log("Implementation (logic):", address(impl));
-        console.log("Proxy (token):", address(proxy));
+        console.log("Implementation (logic):", Upgrades.getImplementationAddress(proxyAddr));
+        console.log("Proxy (token):", proxyAddr);
         console.log("Token (proxy address):", address(token));
     }
 }
