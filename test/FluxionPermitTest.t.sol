@@ -91,13 +91,14 @@ contract FluxionPermitTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPk, digest);
 
         // Verify the signature
-        vm.prank(owner);
         token.permit(owner, spender, value, deadline, v, r, s);
 
         // Check allowance was set
         assertEq(token.allowance(owner, spender), value);
 
         // Using the allowance: spender transfers tokens (simulate by pranking spender)
+        // Ensure spender has no tokens before transfer
+        assertEq(token.balanceOf(spender), 0);
         vm.prank(spender);
         assertTrue(token.transferFrom(owner, address(this), value));
 
