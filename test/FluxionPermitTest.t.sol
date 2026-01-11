@@ -79,18 +79,13 @@ contract FluxionPermitTest is Test {
 
         // Compute the struct hash
         bytes32 structHash = keccak256(
-            abi.encode(
-                PERMIT_TYPEHASH,
-                owner,
-                spender,
-                value,
-                nonce,
-                deadline
-            )
+            abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
         );
 
         // Compute the digest
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+        bytes32 digest = keccak256(
+            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+        );
 
         // Sign digest with owner's private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPk, digest);
@@ -108,6 +103,4 @@ contract FluxionPermitTest is Test {
 
         assertEq(token.balanceOf(address(this)), value);
     }
-
-
 }
