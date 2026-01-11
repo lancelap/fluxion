@@ -3,7 +3,7 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
-import {Fluxion} from "../src/Fluxion.sol";
+import {Fluxion} from "../src/FluxionV2.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract FluxionPermitTest is Test {
@@ -37,12 +37,13 @@ contract FluxionPermitTest is Test {
         spender = vm.addr(0x2);
         impl = new Fluxion();
 
-        // Initialize calldata
+        // Initialize calldata (include trustedForwarder param)
         bytes memory initData = abi.encodeWithSignature(
-            "initialize(string,string,address)",
+            "initialize(string,string,address,address)",
             "Fluxion",
             "FLX",
-            admin
+            admin,
+            address(0)
         );
 
         // Deploy proxy and initialize

@@ -3,7 +3,7 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
-import {Fluxion} from "../src/Fluxion.sol";
+import {Fluxion} from "../src/FluxionV2.sol";
 import {MinimalForwarder} from "../src/MinimalForwarder.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 

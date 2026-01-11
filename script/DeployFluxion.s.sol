@@ -19,8 +19,7 @@ contract DeployFluxion is Script {
             "initialize(string,string,address,address)",
             "Fluxion",
             "FLX",
-            deployer,
-            address(0)
+            deployer
         );
 
         // Deploy UUPS proxy and implementation using OpenZeppelin Foundry Upgrades helper.

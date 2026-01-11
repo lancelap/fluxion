@@ -3,7 +3,6 @@ pragma solidity ^0.8.33;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import {Fluxion} from "../src/Fluxion.sol";
 import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 /// Upgrade script for Foundry (UUPS) using a low-level call to the proxy's upgradeTo
@@ -33,7 +32,7 @@ contract UpgradeFluxion is Script {
         // Upgrade the proxy using OpenZeppelin Foundry Upgrades helper.
         // `Upgrades.upgradeProxy` expects the contract name string (it will deploy the implementation for you),
         // so pass the artifact path "src/Fluxion.sol:Fluxion" and empty data.
-        Upgrades.upgradeProxy(proxy, "src/Fluxion.sol:Fluxion", "");
+        Upgrades.upgradeProxy(proxy, "FluxionV2.sol:Fluxion", "");
 
         vm.stopBroadcast();
 
