@@ -37,12 +37,13 @@ contract FluxionPermitTest is Test {
         spender = vm.addr(0x2);
         impl = new Fluxion();
 
-        // Initialize calldata
+        // Initialize calldata (include trustedForwarder param)
         bytes memory initData = abi.encodeWithSignature(
-            "initialize(string,string,address)",
+            "initialize(string,string,address,address)",
             "Fluxion",
             "FLX",
-            admin
+            admin,
+            address(0)
         );
 
         // Deploy proxy and initialize
