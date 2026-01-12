@@ -30,6 +30,17 @@ jobs:
       - name: Run Forge fmt
         run: forge fmt --check
 
+      - name: Install Soldeer
+        run: |
+          # Download and install soldeer (official installer)
+          # The install script places the soldeer binary in $HOME/.local/bin by default.
+          curl -sSL https://get.soldeer.sh | bash
+          export PATH="$HOME/.local/bin:$PATH"
+          soldeer --version
+
+      - name: Run Soldeer install
+        run: soldeer install
+
       - name: Run Forge build
         run: forge build --sizes
 
