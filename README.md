@@ -1,66 +1,78 @@
-## Foundry
+# Fluxion Token & Factory
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Проект домашнего задания, включающий реализацию обновляемого ERC20 токена с поддержкой Permit и мета-транзакций, а также фабрику для развертывания клонов.
 
-Foundry consists of:
+## Описание контрактов
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Fluxion (v1)
+*   **Стандарт**: ERC20
+*   **Обновляемость**: UUPS (Universal Upgradeable Proxy Standard)
+*   **Расширения**:
+    *   `ERC20Permit`: Поддержка подписей для одобрения транзакций (gasless approvals).
+    *   `AccessControlEnumerable`: Управление ролями (`DEFAULT_ADMIN_ROLE`, `MINTER_ROLE`, `UPGRADER_ROLE`).
 
-## Documentation
+### Fluxion (v2)
+*   Наследует функционал v1.
+*   **Мета-транзакции**: Добавлена поддержка доверенного форвардера (Trusted Forwarder) для реализации gasless-транзакций (аналог ERC2771).
 
-https://book.getfoundry.sh/
+### Factory
+*   Использует библиотеку `Clones` (EIP-1167) для дешевого развертывания минимальных прокси-контрактов.
+*   Позволяет создавать клоны реализации `Fluxion`.
+*   Поддерживает детерминированное развертывание (`create2`).
 
-## Usage
+## Установка и запуск
 
-### Build
+### Предварительные требования
+*   [Foundry](https://book.getfoundry.sh/getting-started/installation)
+*   Git
 
-```shell
-$ forge build
+### Установка
+```bash
+git clone <repo_url>
+cd my-foundry-project
+forge install
 ```
 
-### Test
-
-```shell
-$ forge test
+### Сборка
+```bash
+forge build
 ```
 
-### Format
-
-```shell
-$ forge fmt
+### Тестирование
+Запуск всех тестов:
+```bash
+forge test
 ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
+Запуск конкретного теста с подробным выводом:
+```bash
+forge test --match-contract FluxionPermitTest -vvvv
 ```
 
-### Anvil
+## Развертывание (Deployment)
 
-```shell
-$ anvil
+Для развертывания используются скрипты в папке `script/`.
+Необходимо создать файл `.env` и добавить туда необходимые переменные (PRIVATE_KEY, RPC_URL, ETHERSCAN_API_KEY).
+
+### Развертывание Фабрики и Реализации
+```bash
+forge script script/DeployFactory.s.sol --rpc-url $RPC_URL --broadcast --verify
 ```
 
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+### Обновление до v2
+```bash
+forge script script/UpgradeFluxion.s.sol --rpc-url $RPC_URL --broadcast --verify
 ```
 
-### Cast
+### Другие скрипты
+*   `script/InteractWithFluxion.s.sol`: Скрипт для взаимодействия с развернутым токеном (минтинг, переводы).
+*   `script/SmokeTestFactory.s.sol`: Smoke-тесты для проверки работоспособности фабрики и клонов в тестовой сети.
 
-```shell
-$ cast <subcommand>
-```
+## Верификация
+Скрипты настроены на автоматическую верификацию контрактов на Etherscan (при наличии `ETHERSCAN_API_KEY`).
 
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## Структура проекта
+*   `src/`: Исходный код контрактов.
+*   `script/`: Скрипты для развертывания и взаимодействия.
+*   `test/`: Тесты (Foundry).
+*   `plans/`: Планы и документация по задаче.
