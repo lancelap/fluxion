@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
-import {EIP712} from"@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import {ECDSA} from"@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /// MinimalForwarder from OpenZeppelin (slightly adapted)
 contract MinimalForwarder is EIP712 {
@@ -18,9 +18,7 @@ contract MinimalForwarder is EIP712 {
     }
 
     bytes32 private constant _TYPEHASH =
-        keccak256(
-            "ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)"
-        );
+        keccak256("ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)");
 
     mapping(address => uint256) private _nonces;
 
@@ -32,17 +30,7 @@ contract MinimalForwarder is EIP712 {
 
     function verify(ForwardRequest calldata req, bytes calldata signature) public view returns (bool) {
         bytes32 digest = _hashTypedDataV4(
-            keccak256(
-                abi.encode(
-                    _TYPEHASH,
-                    req.from,
-                    req.to,
-                    req.value,
-                    req.gas,
-                    req.nonce,
-                    keccak256(req.data)
-                )
-            )
+            keccak256(abi.encode(_TYPEHASH, req.from, req.to, req.value, req.gas, req.nonce, keccak256(req.data)))
         );
         return ECDSA.recover(digest, signature) == req.from;
     }
@@ -57,9 +45,8 @@ contract MinimalForwarder is EIP712 {
         _nonces[req.from] = req.nonce + 1;
 
         // Forward the call and append the signer at the end of the calldata
-        (bool success, bytes memory returndata) = req.to.call{gas: req.gas, value: req.value}(
-            abi.encodePacked(req.data, req.from)
-        );
+        (bool success, bytes memory returndata) =
+            req.to.call{gas: req.gas, value: req.value}(abi.encodePacked(req.data, req.from));
 
         // Validate that the relayed transaction did not run out of gas.
         // See OpenZeppelin MinimalForwarder for this gas-left assertion.

@@ -17,12 +17,7 @@ contract UpgradeFluxionV1ToV2Test is Test {
         address owner = vm.addr(ownerPk);
 
         // 1) Deploy V1 via Upgrades helper (it will deploy implementation + proxy and call initialize)
-        bytes memory initV1 = abi.encodeWithSignature(
-            "initialize(string,string,address)",
-            "Fluxion",
-            "FLX",
-            admin
-        );
+        bytes memory initV1 = abi.encodeWithSignature("initialize(string,string,address)", "Fluxion", "FLX", admin);
 
         address proxy = Upgrades.deployUUPSProxy("Fluxion.sol:Fluxion", initV1);
         FluxionV1 tokenV1 = FluxionV1(proxy);

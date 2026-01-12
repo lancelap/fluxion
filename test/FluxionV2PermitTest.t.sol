@@ -18,14 +18,10 @@ contract FluxionPermitTest is Test {
     address spender;
 
     bytes32 public constant EIP712_DOMAIN_TYPEHASH =
-        keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        );
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 
     bytes32 public constant PERMIT_TYPEHASH =
-        keccak256(
-            "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-        );
+        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
     function setUp() public {
         adminPk = 0xAB;
@@ -38,13 +34,8 @@ contract FluxionPermitTest is Test {
         impl = new Fluxion();
 
         // Initialize calldata (include trustedForwarder param)
-        bytes memory initData = abi.encodeWithSignature(
-            "initialize(string,string,address,address)",
-            "Fluxion",
-            "FLX",
-            admin,
-            address(0)
-        );
+        bytes memory initData =
+            abi.encodeWithSignature("initialize(string,string,address,address)", "Fluxion", "FLX", admin, address(0));
 
         // Deploy proxy and initialize
         ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
@@ -79,14 +70,10 @@ contract FluxionPermitTest is Test {
         );
 
         // Compute the struct hash
-        bytes32 structHash = keccak256(
-            abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
-        );
+        bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline));
 
         // Compute the digest
-        bytes32 digest = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
-        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 
         // Sign digest with owner's private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPk, digest);

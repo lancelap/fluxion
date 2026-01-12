@@ -6,8 +6,12 @@ import {Test} from "forge-std/Test.sol";
 import {UnsafeUpgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import {ERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
+import {
+    ERC20PermitUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+import {
+    AccessControlEnumerableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
@@ -39,7 +43,10 @@ contract IncompatibleFluxion is
         string memory symbol_,
         address admin_,
         address /* trustedForwarder */
-    ) public initializer {
+    )
+        public
+        initializer
+    {
         __ERC20_init(name_, symbol_);
         __ERC20Permit_init(name_);
         __AccessControlEnumerable_init();
@@ -62,7 +69,6 @@ contract IncompatibleFluxion is
 }
 
 contract UpgradeFluxionV1ToV2ExtraTest is Test {
-
     function test_upgrade_detects_layout_diff_and_allows_unsafe_then_rollback() public {
         // keys
         uint256 adminPk = 0xAB;
@@ -72,12 +78,7 @@ contract UpgradeFluxionV1ToV2ExtraTest is Test {
         address owner = vm.addr(ownerPk);
 
         // 1) Deploy V1 via Upgrades helper (implementation + proxy and call initialize)
-        bytes memory initV1 = abi.encodeWithSignature(
-            "initialize(string,string,address)",
-            "Fluxion",
-            "FLX",
-            admin
-        );
+        bytes memory initV1 = abi.encodeWithSignature("initialize(string,string,address)", "Fluxion", "FLX", admin);
 
         FluxionV1 implV1 = new FluxionV1();
         address proxy = UnsafeUpgrades.deployUUPSProxy(address(implV1), initV1);
@@ -94,12 +95,12 @@ contract UpgradeFluxionV1ToV2ExtraTest is Test {
 
         // 3) Deploy an implementation that has an incompatible storage layout
         IncompatibleFluxion badImpl = new IncompatibleFluxion();
- 
+
         // 4) Note: the safe Upgrades helper validates storage layouts and would reject
         //    incompatible implementations. Since the incompatible contract is defined
         //    only inside this test (not available as an artifact string), we demonstrate
         //    the behaviour by forcing an unsafe upgrade below.
- 
+
         // 5) Force upgrade using UnsafeUpgrades (bypasses layout validation)
         UnsafeUpgrades.upgradeProxy(proxy, address(badImpl), "", admin);
 
@@ -126,12 +127,7 @@ contract UpgradeFluxionV1ToV2ExtraTest is Test {
         uint256 ownerPk = 0x1;
         address owner = vm.addr(ownerPk);
 
-        bytes memory initV1 = abi.encodeWithSignature(
-            "initialize(string,string,address)",
-            "Fluxion",
-            "FLX",
-            admin
-        );
+        bytes memory initV1 = abi.encodeWithSignature("initialize(string,string,address)", "Fluxion", "FLX", admin);
 
         FluxionV1 implV1Second = new FluxionV1();
         address proxy = UnsafeUpgrades.deployUUPSProxy(address(implV1Second), initV1);
@@ -143,7 +139,7 @@ contract UpgradeFluxionV1ToV2ExtraTest is Test {
 
         // Deploy official V2 implementation (it was written to keep layout compatible)
         FluxionV2 newImpl = new FluxionV2();
- 
+
         // In test environment the Upgrades helper may run external validation which
         // depends on build-info files. Use UnsafeUpgrades in tests to keep them hermetic
         // while still exercising the upgrade path and verifying state preservation.

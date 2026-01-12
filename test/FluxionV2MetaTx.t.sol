@@ -20,14 +20,10 @@ contract FluxionMetaTxTest is Test {
     address spender;
 
     bytes32 public constant EIP712_DOMAIN_TYPEHASH =
-        keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        );
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 
     bytes32 public constant FORWARD_REQUEST_TYPEHASH =
-        keccak256(
-            "ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)"
-        );
+        keccak256("ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)");
 
     function setUp() public {
         adminPk = 0xAB;
@@ -43,11 +39,7 @@ contract FluxionMetaTxTest is Test {
 
         // initialize via proxy and pass trustedForwarder
         bytes memory initData = abi.encodeWithSignature(
-            "initialize(string,string,address,address)",
-            "Fluxion",
-            "FLX",
-            admin,
-            address(forwarder)
+            "initialize(string,string,address,address)", "Fluxion", "FLX", admin, address(forwarder)
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
@@ -97,18 +89,13 @@ contract FluxionMetaTxTest is Test {
 
         // Build request and execute via forwarder (relayer can be any address)
         MinimalForwarder.ForwardRequest memory req = MinimalForwarder.ForwardRequest({
-            from: owner,
-            to: address(token),
-            value: 0,
-            gas: gas,
-            nonce: nonce,
-            data: data
+            from: owner, to: address(token), value: 0, gas: gas, nonce: nonce, data: data
         });
 
         // Use a relayer address
         address relayer = vm.addr(0xDE);
         vm.prank(relayer);
-        (bool success, ) = forwarder.execute(req, signature);
+        (bool success,) = forwarder.execute(req, signature);
         require(success, "Forwarder execute failed");
 
         // After execution, approval should be set as if owner called approve(spender, value)
