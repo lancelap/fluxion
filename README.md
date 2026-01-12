@@ -1,6 +1,87 @@
 # Fluxion Token & Factory
 
-Проект домашнего задания, включающий реализацию обновляемого ERC20 токена с поддержкой Permit и мета-транзакций, а также фабрику для развертывания клонов.
+Implementing an upgradeable ERC20 token with Permit and meta-transaction support, along with a factory for deploying clones.
+
+## Contract Description
+
+### Fluxion (v1)
+*   **Standard**: ERC20
+*   **Upgradeability**: UUPS (Universal Upgradeable Proxy Standard)
+*   **Extensions**:
+    *   `ERC20Permit`: Support for signatures for transaction approvals (gasless approvals).
+    *   `AccessControlEnumerable`: Role management (`DEFAULT_ADMIN_ROLE`, `MINTER_ROLE`, `UPGRADER_ROLE`).
+
+### Fluxion (v2)
+*   Inherits v1 functionality.
+*   **Meta-transactions**: Added support for a Trusted Forwarder to implement gasless transactions (similar to ERC2771).
+
+### Factory
+*   Uses `Clones` library (EIP-1167) for cheap deployment of minimal proxy contracts.
+*   Allows creating clones of the `Fluxion` implementation.
+*   Supports deterministic deployment (`create2`).
+
+## Installation and Usage
+
+### Prerequisites
+*   [Foundry](https://book.getfoundry.sh/getting-started/installation)
+*   Git
+
+### Installation
+```bash
+git clone <repo_url>
+cd my-foundry-project
+forge install
+```
+
+### Build
+```bash
+forge build
+```
+
+### Testing
+Run all tests:
+```bash
+forge test
+```
+
+Run a specific test with verbose output:
+```bash
+forge test --match-contract FluxionPermitTest -vvvv
+```
+
+## Deployment
+
+Scripts in the `script/` folder are used for deployment.
+You need to create a `.env` file and add the necessary variables (PRIVATE_KEY, RPC_URL, ETHERSCAN_API_KEY).
+
+### Deploy Factory and Implementation
+```bash
+forge script script/DeployFactory.s.sol --rpc-url $RPC_URL --broadcast --verify
+```
+
+### Upgrade to v2
+```bash
+forge script script/UpgradeFluxion.s.sol --rpc-url $RPC_URL --broadcast --verify
+```
+
+### Other Scripts
+*   `script/InteractWithFluxion.s.sol`: Script for interacting with the deployed token (minting, transfers).
+*   `script/SmokeTestFactory.s.sol`: Smoke tests to verify the factory and clones in a testnet.
+
+## Verification
+Scripts are configured for automatic contract verification on Etherscan (if `ETHERSCAN_API_KEY` is provided).
+
+## Project Structure
+*   `src/`: Contract source code.
+*   `script/`: Deployment and interaction scripts.
+*   `test/`: Tests (Foundry).
+*   `plans/`: Plans and task documentation.
+
+---
+
+# Fluxion Token & Factory (RU)
+
+Проект, включающий реализацию обновляемого ERC20 токена с поддержкой Permit и мета-транзакций, а также фабрику для развертывания клонов.
 
 ## Описание контрактов
 
