@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
-import "forge-std/Script.sol";
+import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
 import {Fluxion} from "../src/Fluxion.sol";
 import {Factory} from "../src/Factory.sol";
 
